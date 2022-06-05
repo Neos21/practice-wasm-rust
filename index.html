@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <title>Practice WASM Rust</title>
+    <script type="module">
+      console.log('1 <head> <script type="module">');
+    </script>
+    <script>
+      console.log('2 <head> <script>');
+    </script>
+  </head>
+  <body>
+    <h1>Practice WASM Rust</h1>
+    <p>Check The Web Console.</p>
+    <ul>
+      <li><a href="https://neos21.net/">Neo's World</a></li>
+      <li><a href="https://github.com/Neos21">GitHub - Neos21</a></li>
+      <li><a href="https://github.com/Neos21/practice-wasm-rust">GitHub - practice-wasm-rust</a></li>
+      <li><a href="https://neos21.github.io/practice-wasm-rust/">GitHub Pages - Practice WASM Rust</a></li>
+    </ul>
+    
+    <script type="module">
+      console.log('3 <body> <script type="module">');
+      
+      // 元コード (インポート部分の違いと Promise 形式)
+      //import { default as wasm, greet } from "./pkg/hello_wasm.js";
+      //wasm().then((module) => { greet(); });
+      
+      // Importing WASM as a JS module requires us to call an init function provided by the default export.
+      // This is planned to be changed in the future.
+      import * as wasm from './pkg/practice_wasm_rust.js';
+      
+      // 今は Top-Level await が書けるようになっている https://caniuse.com/?search=top%20level%20await
+      try {
+        const module = await wasm.default();  // Init・戻り値 module は基本的に使用しない
+        console.log('wasm() Loaded', { wasm, module });
+        
+        // The boiler plate project comes with a `greet` function that calls: `alert("Hello, hello-wasm!");`
+        wasm.greet();
+        
+        console.log( 'char_example (Expect [A]) :'                   , wasm.char_example('ABC') );
+        console.log( 'string_example (Expect [Hello String Jane]) :' , wasm.string_example('Jane') );
+        console.log( 'str_example (Expect [Hello str John]) :'       , wasm.str_example('John') );
+        console.log( 'number_example (Expect [128]) :'               , wasm.number_example(28) );
+        console.log( 'bool_example 1 (Expect [true]) :'              , wasm.bool_example(true) );
+        console.log( 'bool_example 2 (Expect [false]) :'             , wasm.bool_example(false) );
+        console.log( 'mixed_array_example (Expect [[\'Hello\', 512, null, undefined, 61.2]]) :', wasm.mixed_array_example([2, null, undefined, 'Hola', true]) );
+        console.log( 'typed_array_example (Expect [[1, 2, 3, 4, 5, 6, 7]]) :'                  , wasm.typed_array_example([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) );
+        console.log( 'option_example (Expect [undefined]) :'         , wasm.option_example() );
+        console.log( 'result_example (Expect : throw Error) :'       , wasm.result_example() );
+        
+        console.log('result_example() が例外をスローするのでココには到達しない');
+      }
+      catch(error) {
+        console.warn('Catch Error :', error);
+      }
+    </script>
+    <script>
+      console.log('4 <body> <script>');
+    </script>
+  </body>
+</html>
