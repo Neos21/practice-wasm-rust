@@ -1,0 +1,3 @@
+# GitHub の Language 判定を調整する : 全ての言語を無視するが Rust のみ対象とする
+* linguist-vendored
+*.rs linguist-vendored=false
